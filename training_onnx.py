@@ -92,6 +92,8 @@ with torch.no_grad():
     print("Test MSE:", test_loss.item())
 
 # Export ONNX
+model.eval()
+
 dummy_input = torch.randn(1,10)
 
 torch.onnx.export(
@@ -99,10 +101,11 @@ torch.onnx.export(
     dummy_input,
     "model.onnx",
     input_names=["input"],
-    output_names=["output"]
+    output_names=["output"],
+    opset_version=11,
+    export_params=True,
+    do_constant_folding=True
 )
-
-print("Model exported!")
 
 from google.colab import files
 files.download("model.onnx")
