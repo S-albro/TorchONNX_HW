@@ -2,7 +2,7 @@ let session;
 
 async function loadModel() {
     try {
-        session = await ort.InferenceSession.create("model.onnx");
+        session = await ort.InferenceSession.create("/TorchONNX_HW/model.onnx");
         console.log("Model loaded");
         document.getElementById("result").innerText = "Model loaded";
     } catch (e) {
