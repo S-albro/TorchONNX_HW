@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>ITS 365 Torch ONNX HW/title>
+    <title>ONNX Demo</title>
+
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
 </head>
 
 <body>
 
-<h2>Diabetes Prediction</h2>
+<h2>Diabetes Prediction Model</h2>
 
 <input id="f1" placeholder="Feature 1"><br>
 <input id="f2" placeholder="Feature 2"><br>
@@ -21,7 +23,7 @@
 
 <button onclick="predict()">Predict</button>
 
-<h3 id="result"></h3>
+<h3 id="result">Loading model...</h3>
 
 <script src="script.js"></script>
 
