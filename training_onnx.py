@@ -22,90 +22,74 @@ from sklearn.preprocessing import StandardScaler
 # Load dataset
 data = load_diabetes()
 
-X = data.data
+# Use ONLY first 7 features to match professor style
+X = data.data[:, :7]
 y = data.target
 
-# Split dataset
+# Split
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-# Normalize inputs
+# Normalize
 scaler = StandardScaler()
-
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
-# Convert to tensors
+# Tensor conversion
 X_train = torch.tensor(X_train, dtype=torch.float32)
 y_train = torch.tensor(y_train, dtype=torch.float32).view(-1,1)
 
-X_test = torch.tensor(X_test, dtype=torch.float32)
-y_test = torch.tensor(y_test, dtype=torch.float32).view(-1,1)
-
-# Define model
-class DiabetesNet(nn.Module):
-
+# Model
+class Net(nn.Module):
     def __init__(self):
         super().__init__()
+        self.fc1 = nn.Linear(7, 32)
+        self.fc2 = nn.Linear(32, 16)
+        self.fc3 = nn.Linear(16, 1)
 
-        self.fc1 = nn.Linear(10,32)
-        self.fc2 = nn.Linear(32,16)
-        self.fc3 = nn.Linear(16,1)
-
-    def forward(self,x):
-
+    def forward(self, x):
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
-        x = self.fc3(x)
+        return self.fc3(x)
 
-        return x
-
-model = DiabetesNet()
+model = Net()
 
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
-# Training loop
+# Train
 for epoch in range(300):
-
     optimizer.zero_grad()
-
-    outputs = model(X_train)
-
-    loss = criterion(outputs, y_train)
-
+    out = model(X_train)
+    loss = criterion(out, y_train)
     loss.backward()
-
     optimizer.step()
 
     if epoch % 50 == 0:
-        print("Epoch:", epoch, "Loss:", loss.item())
+        print(epoch, loss.item())
 
-# Evaluate model
-with torch.no_grad():
-
-    predictions = model(X_test)
-
-    test_loss = criterion(predictions, y_test)
-
-    print("Test MSE:", test_loss.item())
-
-# Export ONNX
+# IMPORTANT
 model.eval()
 
-dummy_input = torch.randn(1,10)
+# EXPORT (MATCH PROFESSOR EXACTLY)
+dummy_input = torch.randn(1, 7)
 
 torch.onnx.export(
     model,
     dummy_input,
     "model.onnx",
-    input_names=["input"],
-    output_names=["output"],
-    opset_version=11,
-    export_params=True,
-    do_constant_folding=True
+    input_names=["input1"],
+    output_names=["output1"],
+    opset_version=15,
+    do_constant_folding=True,
+    dynamic_axes={
+        "input1": {0: "batch"},
+        "output1": {0: "batch"}
+    }
 )
+
+print("Export complete")
 
 from google.colab import files
 files.download("model.onnx")
