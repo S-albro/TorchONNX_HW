@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Diabetes Progression Predictor</title>
+
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+
+</head>
+
+<body>
+
+<h2>Diabetes Progression Prediction</h2>
+
+<p>Enter the 10 medical features:</p>
+
+<input id="f1" placeholder="Feature 1"><br>
+<input id="f2" placeholder="Feature 2"><br>
+<input id="f3" placeholder="Feature 3"><br>
+<input id="f4" placeholder="Feature 4"><br>
+<input id="f5" placeholder="Feature 5"><br>
+<input id="f6" placeholder="Feature 6"><br>
+<input id="f7" placeholder="Feature 7"><br>
+<input id="f8" placeholder="Feature 8"><br>
+<input id="f9" placeholder="Feature 9"><br>
+<input id="f10" placeholder="Feature 10"><br><br>
+
+<button onclick="predict()">Predict</button>
+
+<h3 id="result"></h3>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
