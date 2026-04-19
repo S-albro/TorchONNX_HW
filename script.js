@@ -1,36 +1,41 @@
 let session;
 
-async function loadModel(){
-
-    session = await ort.InferenceSession.create("model.onnx");
-
+async function loadModel() {
+    try {
+        session = await ort.InferenceSession.create("model.onnx");
+        console.log("Model loaded");
+    } catch (e) {
+        console.error("Model load failed", e);
+    }
 }
 
 loadModel();
 
-async function predict(){
+async function predict() {
+
+    if (!session) {
+        alert("Model not loaded yet");
+        return;
+    }
 
     const input = new Float32Array([
-
         parseFloat(document.getElementById("f1").value),
         parseFloat(document.getElementById("f2").value),
         parseFloat(document.getElementById("f3").value),
         parseFloat(document.getElementById("f4").value),
         parseFloat(document.getElementById("f5").value),
         parseFloat(document.getElementById("f6").value),
-        parseFloat(document.getElementById("f7").value),
-        parseFloat(document.getElementById("f8").value),
-        parseFloat(document.getElementById("f9").value),
-        parseFloat(document.getElementById("f10").value)
-
+        parseFloat(document.getElementById("f7").value)
     ]);
 
-    const tensor = new ort.Tensor("float32", input, [1,10]);
+    const tensor = new ort.Tensor("float32", input, [1, 7]);
 
-    const results = await session.run({input:tensor});
+    const results = await session.run({
+        input1: tensor
+    });
 
-    const prediction = results.output.data[0];
+    const output = results.output1.data[0];
 
     document.getElementById("result").innerText =
-        "Predicted progression score: " + prediction.toFixed(2);
+        "Prediction: " + output.toFixed(2);
 }
