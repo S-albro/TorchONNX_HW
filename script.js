@@ -4,8 +4,10 @@ async function loadModel() {
     try {
         session = await ort.InferenceSession.create("model.onnx");
         console.log("Model loaded");
+        document.getElementById("result").innerText = "Model loaded";
     } catch (e) {
-        console.error("Model load failed", e);
+        console.error("Model failed to load", e);
+        document.getElementById("result").innerText = "Model failed to load";
     }
 }
 
@@ -19,13 +21,13 @@ async function predict() {
     }
 
     const input = new Float32Array([
-        parseFloat(document.getElementById("f1").value),
-        parseFloat(document.getElementById("f2").value),
-        parseFloat(document.getElementById("f3").value),
-        parseFloat(document.getElementById("f4").value),
-        parseFloat(document.getElementById("f5").value),
-        parseFloat(document.getElementById("f6").value),
-        parseFloat(document.getElementById("f7").value)
+        parseFloat(document.getElementById("f1").value || 0),
+        parseFloat(document.getElementById("f2").value || 0),
+        parseFloat(document.getElementById("f3").value || 0),
+        parseFloat(document.getElementById("f4").value || 0),
+        parseFloat(document.getElementById("f5").value || 0),
+        parseFloat(document.getElementById("f6").value || 0),
+        parseFloat(document.getElementById("f7").value || 0)
     ]);
 
     const tensor = new ort.Tensor("float32", input, [1, 7]);
