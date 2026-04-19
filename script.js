@@ -2,11 +2,24 @@ let session;
 
 async function loadModel() {
     try {
-        session = await ort.InferenceSession.create("/TorchONNX_HW/model.onnx");
-        console.log("Model loaded");
+        console.log("Loading model...");
+
+        session = await ort.InferenceSession.create(
+            "./model.onnx",
+            {
+                executionProviders: ["wasm"]
+            }
+        );
+
+        console.log("Model loaded successfully");
+
         document.getElementById("result").innerText = "Model loaded";
+
+        console.log("Inputs:", session.inputNames);
+        console.log("Outputs:", session.outputNames);
+
     } catch (e) {
-        console.error("Model failed to load", e);
+        console.error("MODEL LOAD FAILED:", e);
         document.getElementById("result").innerText = "Model failed to load";
     }
 }
@@ -16,7 +29,7 @@ loadModel();
 async function predict() {
 
     if (!session) {
-        alert("Model not loaded yet");
+        alert("Model not ready yet");
         return;
     }
 
@@ -32,11 +45,16 @@ async function predict() {
 
     const tensor = new ort.Tensor("float32", input, [1, 7]);
 
-    const results = await session.run({
-        input1: tensor
-    });
+    const inputName = session.inputNames[0];
 
-    const output = results.output1.data[0];
+    const feeds = {};
+    feeds[inputName] = tensor;
+
+    const results = await session.run(feeds);
+
+    const outputName = session.outputNames[0];
+
+    const output = results[outputName].data[0];
 
     document.getElementById("result").innerText =
         "Prediction: " + output.toFixed(2);
