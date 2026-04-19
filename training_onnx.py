@@ -22,7 +22,6 @@ from sklearn.preprocessing import StandardScaler
 # Load dataset
 data = load_diabetes()
 
-# Use ONLY first 7 features to match professor style
 X = data.data[:, :7]
 y = data.target
 
